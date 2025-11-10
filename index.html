@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boda de Marco - 8 de Noviembre 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .date {
+            font-size: 1.3em;
+            font-style: italic;
+            opacity: 0.95;
+            letter-spacing: 1px;
+        }
+
+        .gallery-container {
+            max-width: 1400px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            aspect-ratio: 1;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Visor de pantalla completa */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(255,255,255,0.1);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            z-index: 1001;
+            background: rgba(0,0,0,0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(102, 126, 234, 0.8);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+            user-select: none;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(102, 126, 234, 0.8);
+        }
+
+        .lightbox-prev {
+            left: 30px;
+        }
+
+        .lightbox-next {
+            right: 30px;
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 18px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 25px;
+            border-radius: 25px;
+        }
+
+        /* Botón de música flotante */
+        .music-control {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            z-index: 999;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .music-control.playing {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 30px rgba(102, 126, 234, 0.8);
+            }
+        }
+
+        .music-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255,255,255,0.5);
+            margin-top: 60px;
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+
+            .lightbox-nav {
+                font-size: 30px;
+                width: 50px;
+                height: 50px;
+                padding: 10px;
+            }
+
+            .lightbox-prev {
+                left: 10px;
+            }
+
+            .lightbox-next {
+                right: 10px;
+            }
+
+            .lightbox-close {
+                top: 20px;
+                right: 20px;
+                font-size: 30px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Boda de Marco</h1>
+        <p class="date">8 de Noviembre de 2025</p>
+    </header>
+
+    <div class="gallery-container">
+        <div class="gallery" id="gallery">
+            <!-- Las imágenes se generarán con JavaScript -->
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" id="lightbox-close">&times;</span>
+        <div class="lightbox-nav lightbox-prev" id="lightbox-prev">&#8249;</div>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="">
+        </div>
+        <div class="lightbox-nav lightbox-next" id="lightbox-next">&#8250;</div>
+        <div class="lightbox-counter" id="lightbox-counter"></div>
+    </div>
+
+    <div class="music-control" id="music-control">
+        <span class="music-icon">&#9658;</span>
+    </div>
+
+    <audio id="background-music" loop>
+        <source src="audio/boda.mp3" type="audio/mpeg">
+    </audio>
+
+    <footer>
+        <p>Recuerdos inolvidables de un día especial</p>
+    </footer>
+
+    <script>
+        // Generar galería (45 fotos)
+        const gallery = document.getElementById('gallery');
+        const totalPhotos = 45;
+
+        for (let i = 1; i <= totalPhotos; i++) {
+            const photoNumber = String(i).padStart(4, '0');
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+            div.innerHTML = `<img src="images/foto7_${photoNumber}.webp" alt="Foto ${i}" loading="lazy" data-index="${i-1}">`;
+            gallery.appendChild(div);
+        }
+
+        // Visor de pantalla completa
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxPrev = document.getElementById('lightbox-prev');
+        const lightboxNext = document.getElementById('lightbox-next');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+        const galleryItems = document.querySelectorAll('.gallery-item img');
+
+        let currentIndex = 0;
+        let musicStarted = false;
+
+        // Control de música
+        const music = document.getElementById('background-music');
+        const musicControl = document.getElementById('music-control');
+        const musicIcon = musicControl.querySelector('.music-icon');
+
+        function updateCounter() {
+            lightboxCounter.textContent = `${currentIndex + 1} / ${totalPhotos}`;
+        }
+
+        function showImage(index) {
+            currentIndex = index;
+            const photoNumber = String(index + 1).padStart(4, '0');
+            lightboxImg.src = `images/foto7_${photoNumber}.webp`;
+            updateCounter();
+        }
+
+        // Abrir lightbox
+        galleryItems.forEach((item) => {
+            item.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                showImage(index);
+                lightbox.classList.add('active');
+
+                // Iniciar música en el primer clic
+                if (!musicStarted) {
+                    music.play().catch(e => console.log('Error al reproducir música:', e));
+                    musicStarted = true;
+                    musicControl.classList.add('playing');
+                    musicIcon.innerHTML = '&#10074;&#10074;';
+                }
+            });
+        });
+
+        // Cerrar lightbox
+        lightboxClose.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                lightbox.classList.remove('active');
+            }
+        });
+
+        // Navegación
+        lightboxPrev.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + totalPhotos) % totalPhotos;
+            showImage(currentIndex);
+        });
+
+        lightboxNext.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % totalPhotos;
+            showImage(currentIndex);
+        });
+
+        // Navegación con teclado
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') {
+                    currentIndex = (currentIndex - 1 + totalPhotos) % totalPhotos;
+                    showImage(currentIndex);
+                } else if (e.key === 'ArrowRight') {
+                    currentIndex = (currentIndex + 1) % totalPhotos;
+                    showImage(currentIndex);
+                }
+            }
+        });
+
+        // Soporte táctil para deslizar
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        lightbox.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        lightbox.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                // Deslizar izquierda - siguiente
+                currentIndex = (currentIndex + 1) % totalPhotos;
+                showImage(currentIndex);
+            }
+            if (touchEndX > touchStartX + 50) {
+                // Deslizar derecha - anterior
+                currentIndex = (currentIndex - 1 + totalPhotos) % totalPhotos;
+                showImage(currentIndex);
+            }
+        }
+
+        // Control de música
+        musicControl.addEventListener('click', () => {
+            if (music.paused) {
+                music.play();
+                musicControl.classList.add('playing');
+                musicIcon.innerHTML = '&#10074;&#10074;';
+            } else {
+                music.pause();
+                musicControl.classList.remove('playing');
+                musicIcon.innerHTML = '&#9658;';
+            }
+        });
+
+        // Cerrar lightbox al hacer clic fuera de la imagen
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                lightbox.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
